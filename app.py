@@ -3,12 +3,11 @@ from decouple import config
 import pymysql
 import re
 import os
-from werkzeug.security import check_password_hash  # Para verificar la contraseña hasheada
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRETKEYAPP')
 
 # Configuración de la base de datos
 db = pymysql.connect(
@@ -46,10 +45,10 @@ def login():
 
 @app.route('/logout')
 def logout():
-	session.pop('loggedin', None)
-	session.pop('id', None)
-	session.pop('username', None)
-	return redirect(url_for('login'))
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -73,8 +72,8 @@ def register():
             msg = 'Please fill out the form!'
         else:
             # Insertar el nuevo usuario con la contraseña hasheada
+            hashed_password = generate_password_hash(password)
             with db.cursor() as cursor:
-                hashed_password = generate_password_hash(password)                
                 cursor.execute('INSERT INTO accounts (username, password, email) VALUES (%s, %s, %s)', (username, hashed_password, email))
                 db.commit()
             msg = 'You have successfully registered!'
