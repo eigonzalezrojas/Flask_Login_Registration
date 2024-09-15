@@ -2,19 +2,20 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from decouple import config
 import pymysql
 import re
+import os
 from werkzeug.security import check_password_hash  # Para verificar la contraseña hasheada
 
 app = Flask(__name__)
 
 
-app.secret_key = 'SECRETKEYAPP'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 # Configuración de la base de datos
 db = pymysql.connect(
-    host="MYSQLHOST",
-    user="MYSQLUSER",
-    password="MYSQLPASSWORD",
-    database="MYSQLDBNAME",
+    host=os.environ.get('MYSQLHOST'),
+    user=os.environ.get('MYSQLUSER'),
+    password=os.environ.get('MYSQLPASSWORD'),
+    database=os.environ.get('MYSQLDBNAME'),
     cursorclass=pymysql.cursors.DictCursor
 )
 
